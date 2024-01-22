@@ -1,0 +1,182 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String        @id
+  username     String        @unique
+  name         String
+  email        String        @unique
+  password     String
+  reset_token  String?
+  rule         UserRule
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  deletedAt    DateTime?
+  reservations Reservation[]
+  userInfo     UserInfo?
+  Checkins     Checkin[]
+  Checkout     Checkout[]
+
+  @@map("users")
+}
+
+model UserInfo {
+  id                String    @id
+  cpf               String    @unique
+  contact           String
+  nationality       String
+  emergency_contact String
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  deletedAt         DateTime?
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId            String    @unique
+
+  @@map("user_info")
+}
+
+model Room {
+  id               String        @id
+  number           Int
+  status           StatusRoom
+  type             TypeRoom
+  capacityAdults   Int
+  capacityChildren Int
+  imageUrl         String?
+  value            Float
+  reservations     Reservation[]
+
+  @@map("rooms")
+}
+
+model Promotion {
+  id          String        @id
+  name        String
+  details     String?
+  value       Float
+  initialDate DateTime
+  endDate     DateTime
+  reservation Reservation[]
+
+  @@map("promotions")
+}
+
+model Reservation {
+  id                  String                @id
+  userId              String
+  User                User                  @relation(fields: [userId], references: [id])
+  Room                Room?                 @relation(fields: [roomId], references: [id])
+  Promotion           Promotion?            @relation(fields: [promotionId], references: [id])
+  roomId              String?
+  promotionId         String?
+  Checkins            Checkin[]
+  Checkout            Checkout[]
+  Transaction         Transaction[]
+  endDate             DateTime
+  initialDate         DateTime
+  ReservationsDishes  ReservationsDishes[]
+  ReservationSupplies ReservationSupplies[]
+  adults              Int?
+  children            Int?
+  totalValue          Float?
+
+  @@map("reservations")
+}
+
+model Checkin {
+  id            String      @id
+  checkin_date  DateTime
+  User          User        @relation(fields: [userId], references: [id])
+  userId        String
+  Reservation   Reservation @relation(fields: [reservationId], references: [id])
+  reservationId String
+
+  @@map("checkins")
+}
+
+model Checkout {
+  id            String       @id
+  checkout_date DateTime
+  User          User?        @relation(fields: [userId], references: [id])
+  userId        String?
+  Reservation   Reservation? @relation(fields: [reservationId], references: [id])
+  reservationId String?
+
+  @@map("checkouts")
+}
+
+model Transaction {
+  id            String      @id
+  Reservation   Reservation @relation(fields: [reservationId], references: [id])
+  reservationId String
+  price         Float?
+
+  @@map("transactions")
+}
+
+model Supply {
+  id           String                @id
+  name         String
+  description  String
+  stock        Int
+  price        Float
+  Reservations ReservationSupplies[]
+
+  @@map("supplies")
+}
+
+model ReservationSupplies {
+  id            String       @id
+  Reservation   Reservation? @relation(fields: [reservationId], references: [id])
+  reservationId String?
+  Supply        Supply?      @relation(fields: [supplyId], references: [id])
+  supplyId      String?
+
+  @@map("reservation_supplies")
+}
+
+model KitchenDishes {
+  id           String               @id
+  name         String
+  description  String
+  price        Float
+  Reservations ReservationsDishes[]
+
+  @@map("kitchen_dishes")
+}
+
+model ReservationsDishes {
+  id              String         @id
+  KitchenDishes   KitchenDishes? @relation(fields: [kitchenDishesId], references: [id])
+  kitchenDishesId String?
+  Reservation     Reservation    @relation(fields: [reservationId], references: [id])
+  reservationId   String
+
+  @@map("reservations_dishes")
+}
+
+enum UserRule {
+  CLEANER
+  RECEPTIONIST
+  MANAGER
+  KITCHEN
+  GUEST
+}
+
+enum StatusRoom {
+  AVAILABLE
+  OCCUPIED
+  UNDER_MAINTENANCE
+}
+
+enum TypeRoom {
+  STANDARD
+  EXECUTIVE
+  DELUXE
+}
