@@ -21,6 +21,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "heroku-postbuild": "NODE_ENV=dev npm install --omit --no-shrinkwrap && npm run build",
     "seed:users": "ts-node ./src/seeders/users/main.ts",
+    "seed:rooms": "ts-node ./src/seeders/rooms/main.ts",
     "seed:supplies": "ts-node ./src/seeders/supplies/main.ts",
     "seed:kitchen-dishes": "ts-node ./src/seeders/kitchen-dishes/main.ts"
   },
