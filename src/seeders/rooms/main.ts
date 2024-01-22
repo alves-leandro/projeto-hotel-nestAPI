@@ -4,18 +4,18 @@ import { randomUUID } from 'crypto';
 
 const chance = new Chance();
 
-const possibleRoomTypes = ['Single', 'Double', 'Suite'];
-const possibleRoomStatus = ['Available', 'Occupied', 'Reserved'];
+const possibleRoomTypes = ['STANDARD', 'EXECUTIVE', 'DELUXE'];
+const possibleRoomStatus = ['AVAILABLE', 'OCCUPIED', 'UNDER_MAINTENANCE'];
 
 async function seed() {
   const prisma = new PrismaClient();
 
   try {
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 10; i++) {
       const room = await prisma.room.create({
         data: {
           id: randomUUID(),
-          number: chance.integer({ min: 100, max: 999 }), // Room number example
+          number: chance.integer({ min: 100, max: 999 }),
           type: chance.pickone(possibleRoomTypes),
           status: chance.pickone(possibleRoomStatus),
           capacityAdults: chance.integer({ min: 1, max: 4 }),
