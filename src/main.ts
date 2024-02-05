@@ -36,8 +36,10 @@ async function bootstrap() {
   );
 
   const config = new DocumentBuilder()
-    .setTitle('Nome da Sua API')
-    .setDescription('Descrição da Sua API')
+    .setTitle('API Hacka Hotel')
+    .setDescription(
+      'API desenvolvida para manipulação de dados, cadastro de clientes e funcionários, gestão de ativos e quartos',
+    )
     .setVersion('1.0')
     .build();
 
